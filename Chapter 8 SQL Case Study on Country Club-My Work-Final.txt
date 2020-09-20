@@ -1,0 +1,433 @@
+/* Q1: Some of the facilities charge a fee to members, but some do not. Write a SQL query to produce a list of the names of the facilities that do. */ 
+
+SELECT name
+FROM Facilities
+WHERE membercost !=0;
+
+Output: 
+
+name Ascending
+Massage Room 1
+Massage Room 2
+Squash Court
+Tennis Court 1
+Tennis Court 2
+
+
+
+/* Q2: How many facilities do not charge a fee to members? */
+
+SELECT COUNT(name)
+FROM Facilities
+WHERE membercost = 0;
+
+Output:
+
+COUNT(name)
+4
+
+
+/* Q3: Write an SQL query to show a list of facilities that charge a fee to members,
+where the fee is less than 20% of the facility's monthly maintenance cost.
+Return the facid, facility name, member cost, and monthly maintenance of the
+facilities in question. */
+
+SELECT facid, name, membercost, monthlymaintenance
+FROM Facilities
+WHERE membercost < 0.20 * monthlymaintenance;
+
+Output:
+
+facid	name		membercost	monthlymaintenance	
+0	Tennis Court 1	5.0		200
+1	Tennis Court 2	5.0		200
+2	Badminton Court	0.0		50
+3	Table Tennis	0.0		10
+4	Massage Room 1	9.9		3000
+5	Massage Room 2	9.9		3000
+6	Squash Court	3.5		80
+7	Snooker Table	0.0		15
+8	Pool Table	0.0		15
+
+
+
+
+/* Q4: Write an SQL query to retrieve the details of facilities with ID 1 and 5.
+Try writing the query without using the OR operator. */
+
+SELECT *
+FROM Facilities
+WHERE facid IN (1,5);
+
+Output:
+
+facid	name		membercost	guestcost	initialoutlay	monthlymaintenance	
+1	Tennis Court 2	5.0		25.0		8000			200
+5	Massage Room 2	9.9		80.0		4000			3000
+
+
+
+/* Q5: Produce a list of facilities, with each labelled as
+'cheap' or 'expensive', depending on if their monthly maintenance cost is
+more than $100. Return the name and monthly maintenance of the facilities
+in question. */
+
+SELECT name,
+	   monthlymaintenance,
+	   CASE WHEN monthlymaintenance > 100 THEN 'expensive'
+			ELSE 'cheap' END AS outcome
+FROM Facilities;
+
+Output:
+
+name			monthlymaintenance	outcome	
+Tennis Court 1		200			expensive
+Tennis Court 2		200			expensive
+Badminton Court		50			cheap
+Table Tennis		10			cheap
+Massage Room 1		3000			expensive
+Massage Room 2		3000			expensive
+Squash Court		80			cheap
+Snooker Table		15			cheap
+Pool Table		15			cheap
+
+
+
+/* Q6: You'd like to get the first and last name of the last member(s)
+who signed up. Try not to use the LIMIT clause for your solution. */
+
+SELECT firstname AS First_Name,
+	   surname AS Last_Name,
+	   joindate
+FROM Members
+ORDER BY joindate DESC;
+
+Output:
+
+First_Name	Last_Name		joindate	
+Darren		Smith			2012-09-26 18:08:45
+Erica		Crumpet			2012-09-22 08:36:38
+John		Hunt			2012-09-19 11:32:45
+Hyacinth	Tupperware		2012-09-18 19:32:05
+Millicent	Purview			2012-09-18 19:04:01
+Henry		Worthington-Smyth	2012-09-17 12:27:15
+David		Farrell			2012-09-15 08:22:05
+Henrietta	Rumney			2012-09-05 08:42:35
+Douglas		Jones			2012-09-02 18:43:05
+Ramnaresh	Sarwin			2012-09-01 08:44:42
+Joan		Coplin			2012-08-29 08:32:41
+Anna		Mackenzie		2012-08-26 09:32:05
+Matthew		Genting			2012-08-19 14:55:55
+David		Pinker			2012-08-16 11:32:47
+Timothy		Baker			2012-08-15 10:34:25
+Florence	Bader			2012-08-10 17:52:03
+Jack		Smith			2012-08-10 16:22:05
+Jemima		Farrell			2012-08-10 14:28:01
+Anne		Baker			2012-08-10 14:23:22
+David		Jones			2012-08-06 16:32:55
+Charles		Owen			2012-08-03 19:42:37
+Ponder		Stibbons		2012-07-25 17:09:05
+Tim		Boothe			2012-07-25 16:02:35
+Nancy		Dare			2012-07-25 08:59:12
+Burton		Tracy			2012-07-15 08:52:55
+Gerald		Butters			2012-07-09 10:44:09
+Janice		Joplette		2012-07-03 10:25:05
+Tim		Rownam			2012-07-03 09:32:15
+Tracy		Smith			2012-07-02 12:08:23
+Darren		Smith			2012-07-02 12:02:05
+GUEST		GUEST			2012-07-01 00:00:00
+
+
+/* Q7: Produce a list of all members who have used a tennis court.
+Include in your output the name of the court, and the name of the member
+formatted as a single column. Ensure no duplicate data, and order by
+the member name. */
+
+SELECT DISTINCT CONCAT(m.firstname, ' ', m.surname) AS Member_Name,
+	   f.name AS Court_Name
+FROM Members AS m
+INNER JOIN Bookings AS b
+	ON m.memid = b.memid
+INNER JOIN Facilities AS f
+	ON b.facid = f.facid
+WHERE f.facid IN (0,1)
+ORDER BY Member_Name;
+
+Output:
+
+Member_Name		Court_Name	
+Anne Baker		Tennis Court 1
+Anne Baker		Tennis Court 2
+Burton Tracy		Tennis Court 2
+Burton Tracy		Tennis Court 1
+Charles Owen		Tennis Court 1
+Charles Owen		Tennis Court 2
+Darren Smith		Tennis Court 2
+David Farrell		Tennis Court 1
+David Farrell		Tennis Court 2
+David Jones		Tennis Court 1
+David Jones		Tennis Court 2
+David Pinker		Tennis Court 1
+Douglas Jones		Tennis Court 1
+Erica Crumpet		Tennis Court 1
+Florence Bader		Tennis Court 1
+Florence Bader		Tennis Court 2
+Gerald Butters		Tennis Court 2
+Gerald Butters		Tennis Court 1
+GUEST GUEST		Tennis Court 2
+GUEST GUEST		Tennis Court 1
+Henrietta Rumney	Tennis Court 2
+Jack Smith		Tennis Court 2
+Jack Smith		Tennis Court 1
+Janice Joplette		Tennis Court 2
+Janice Joplette		Tennis Court 1
+Jemima Farrell		Tennis Court 2
+Jemima Farrell		Tennis Court 1
+Joan Coplin		Tennis Court 1
+John Hunt		Tennis Court 2
+John Hunt		Tennis Court 1
+Matthew Genting		Tennis Court 1
+Millicent Purview	Tennis Court 2
+Nancy Dare		Tennis Court 2
+Nancy Dare		Tennis Court 1
+Ponder Stibbons		Tennis Court 1
+Ponder Stibbons		Tennis Court 2
+Ramnaresh Sarwin	Tennis Court 2
+Ramnaresh Sarwin	Tennis Court 1
+Tim Boothe		Tennis Court 1
+Tim Boothe		Tennis Court 2
+Tim Rownam		Tennis Court 2
+Tim Rownam		Tennis Court 1
+Timothy Baker		Tennis Court 2
+Timothy Baker		Tennis Court 1
+Tracy Smith		Tennis Court 2
+Tracy Smith		Tennis Court 1
+
+
+/* Q8: Produce a list of bookings on the day of 2012-09-14 which
+will cost the member (or guest) more than $30. Remember that guests have
+different costs to members (the listed costs are per half-hour 'slot'), and
+the guest user's ID is always 0. Include in your output the name of the
+facility, the name of the member formatted as a single column, and the cost.
+Order by descending cost, and do not use any subqueries. */
+
+
+SELECT
+B.memid, CONCAT(M.Firstname,' ',M.Surname) AS Name,Sum(slots) AS TotSlots,
+CASE WHEN B.memid = 0 then SUM(slots)*F.guestcost
+ELSE SUM(slots)*F.membercost END Cost
+FROM
+Bookings AS B
+INNER JOIN Facilities AS F
+	ON B.facid = F.facid
+INNER JOIN Members AS M
+	ON M.memid=B.memid
+WHERE starttime >= '2012-09-14' and  starttime < '2012-09-15' 
+GROUP BY B.memid, M.Firstname+M.Surname
+HAVING Cost > 30
+ORDER BY Cost DESC
+
+
+Output:
+
+memid	Name		TotSlots	Cost 
+0	GUEST GUEST	33		825
+13	Jemima Farrell	6		59.4
+3	Tim Rownam	8		40
+11	David Jones	7		35
+
+
+
+/* Q9: This time, produce the same result as in Q8, but using a subquery. */
+
+
+SELECT *
+FROM(
+SELECT
+B.memid, CONCAT(M.Firstname,' ',M.Surname) AS Name,Sum(slots) AS TotSlots,
+CASE WHEN B.memid = 0 then SUM(slots)*F.guestcost
+ELSE SUM(slots)*F.membercost END Cost
+FROM
+Bookings AS B
+INNER JOIN Facilities AS F
+	ON B.facid = F.facid
+INNER JOIN Members AS M
+	ON M.memid=B.memid
+WHERE starttime >= '2012-09-14' and  starttime < '2012-09-15' 
+GROUP BY B.memid, M.Firstname+M.Surname) AS A
+WHERE A.Cost > 30
+ORDER BY Cost DESC
+
+Output:
+
+memid	Name		TotSlots	Cost 
+0	GUEST GUEST	33		825
+13	Jemima Farrell	6		59.4
+3	Tim Rownam	8		40
+11	David Jones	7		35
+
+
+/* Q10: Produce a list of facilities with a total revenue less than 1000.
+The output of facility name and total revenue, sorted by revenue. Remember
+that there's a different cost for guests and members! */
+
+Select 
+FACName,Sum(Revenue) Revenue
+from
+(
+Select 
+F.Name FacName,B.facid,'G' MemDesc,Sum(slots) TotSlots,
+ Sum(Slots)*F.guestcost  Revenue
+from
+Bookings B
+Inner join Facilities F on B.facid = F.facid
+where B.memid = 0
+Group by F.Name,B.facid
+
+UNION
+
+Select 
+F.Name FacName,B.facid,'M' MemDesc,Sum(slots) TotSlots,
+ Sum(Slots)*F.membercost  Revenue
+from
+Bookings B
+Inner join Facilities F on B.facid = F.facid
+where B.memid >0
+Group by F.Name,B.facid
+    )A
+Group by FACName
+having Revenue < 1000;
+
+
+Output:
+
+FACName			Total_Revenue	
+Pool Table		270.0		
+Snooker Table		240.0		
+Table Tennis		180.0		
+
+
+
+/* Q11: Produce a report of members and who recommended them in alphabetic surname,firstname order */
+
+SELECT DISTINCT CONCAT(m.surname, ' ', m.firstname) AS Member_Name,
+	CONCAT(m1.surname, ' ', m1.firstname) AS Recommended
+FROM Members as m
+INNER JOIN Members AS m1
+	ON m.memid = m1.recommendedby
+	WHERE m.memid = m1.recommendedby 
+	AND
+	m1.recommendedby != ''
+
+ORDER BY Member_Name;
+
+Output:
+
+Member_Name	Recommended	
+Bader Florence	Sarwin Ramnaresh
+Baker Timothy	Coplin Joan
+Butters Gerald	Genting Matthew
+Farrell Jemima	Pinker David
+Farrell Jemima	Baker Timothy
+Genting Matthew	Rumney Henrietta
+Jones David	Jones Douglas
+Joplette Janice	Jones David
+Joplette Janice	Dare Nancy
+Purview Millicent	Hunt John
+Rownam Tim	Boothe Tim
+Smith Darren	Butters Gerald
+Smith Darren	Joplette Janice
+Smith Darren	Smith Jack
+Smith Darren	Owen Charles
+Smith Darren	Mackenzie Anna
+Smith Tracy	Crumpet Erica
+Smith Tracy	Worthington-Smyth Henry
+Smith Tracy	Purview Millicent
+Stibbons Ponder	Bader Florence
+Stibbons Ponder	Baker Anne
+Tracy Burton	Stibbons Ponder
+
+
+
+/* Q12: Find the facilities with their usage by member, but not guests */
+
+SELECT DISTINCT f.name AS Facility
+FROM Facilities AS f
+INNER JOIN Bookings as b
+	ON f.facid = b.facid
+WHERE b.memid != '0';
+
+
+Output:
+
+Facility	
+Table Tennis
+Massage Room 1
+Snooker Table
+Pool Table
+Tennis Court 1
+Squash Court
+Badminton Court
+Tennis Court 2
+Massage Room 2
+
+
+
+/* Q13: Find the facilities usage by month, but not guests */
+
+
+SELECT DISTINCT f.name AS Facility,
+	   EXTRACT(MONTH FROM starttime) AS MONTH
+FROM Facilities AS f
+INNER JOIN Bookings as b
+	ON f.facid = b.facid
+WHERE b.memid != '0';
+
+Output:
+
+Facility	MONTH	
+Table Tennis	7
+Massage Room 1	7
+Snooker Table	7
+Pool Table	7
+Tennis Court 1	7
+Squash Court	7
+Badminton Court	7
+Tennis Court 2	7
+Massage Room 2	7
+Tennis Court 1	8
+Tennis Court 2	8
+Badminton Court	8
+Table Tennis	8
+Massage Room 1	8
+Massage Room 2	8
+Squash Court	8
+Snooker Table	8
+Pool Table	8
+Tennis Court 1	9
+Tennis Court 2	9
+Badminton Court	9
+Table Tennis	9
+Massage Room 1	9
+Massage Room 2	9
+Squash Court	9
+Snooker Table	9
+Pool Table	9
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
